@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, Depends
-from auth_service.db.deps import get_session
-from auth_service.models import User
-from auth_service.schemas import UserCreate, UserRead, BalanceRead
+from decimal import Decimal
+from fastapi import HTTPException
+from auth_service.domain import User
+from auth_service.schemas import UserCreate, UserRead
 from auth_service.utils import generate_id
 
 class UserCRUD:
@@ -27,19 +27,15 @@ class UserCRUD:
         self.session.refresh(new_user)
         return UserRead.model_validate(new_user)
 
-    def dep(self, username: str, value: int) -> BalanceRead:
-        balance_owner = self.session.query(User).filter(User.name == username).first()
+    def dep(self, user: User, value: int) -> UserRead:
+        balance_owner = self.session.query(User).filter(User.id == user.id).first()
         if not balance_owner:
-            raise HTTPException(status_code=400, detail="User doesn't exist")
-        elif value <= 0:
+            raise HTTPException(status_code=404, detail="User doesn't exist")
+        if value <= 0:
             raise HTTPException(status_code=400, detail="Value must be greater than 0")
-        balance_owner.balance += value
+        balance_owner.balance = Decimal(balance_owner.balance + value)
         self.session.add(balance_owner)
         self.session.commit()
         self.session.refresh(balance_owner)
 
-        return BalanceRead.model_validate(balance_owner)
-
-
-def get_user_crud(session: Session = Depends(get_session)) -> UserCRUD:
-    return UserCRUD(session = session)
+        return UserRead.model_validate(balance_owner)

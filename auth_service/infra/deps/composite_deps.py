@@ -1,21 +1,17 @@
-from typing import NamedTuple, TYPE_CHECKING
-from auth_service.schemas import UserRead
+from typing import NamedTuple
 from fastapi import Depends
-from sqlalchemy.orm import Session
-from auth_service.db.deps import get_session
+from auth_service.schemas import UserRead
 from .auth_check import get_current_user
-
-if TYPE_CHECKING:
-    from auth_service.use_cases import UserCRUD
+from .user_crud_session import get_user_crud
+from auth_service.infra.db.repositories.user_crud import UserCRUD
+from auth_service.domain import User
 
 class CommonDeps(NamedTuple):
-    crud: "UserCRUD"
-    user: UserRead
+    crud: UserCRUD
+    user: User
 
 def get_common_deps(
-    session: Session = Depends(get_session),
     user: UserRead = Depends(get_current_user),
+    crud: UserCRUD = Depends(get_user_crud),
 ) -> CommonDeps:
-    from auth_service.use_cases import UserCRUD
-    crud = UserCRUD(session)
     return CommonDeps(crud=crud, user=user)

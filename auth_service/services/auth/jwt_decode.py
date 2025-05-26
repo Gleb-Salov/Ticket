@@ -8,8 +8,8 @@ class JWTValidator:
 
         if not os.path.exists(public_key_path):
             raise FileNotFoundError(f"Public key file not found: {public_key_path}")
-        with open(public_key_path, "r", encoding="utf-8") as f:
-            self._public_key = f.read()
+        with open(public_key_path, "r", encoding="utf-8") as key_file:
+            self._public_key = key_file.read()
 
     def decode_jwt(self, token: str) -> dict:
         try:

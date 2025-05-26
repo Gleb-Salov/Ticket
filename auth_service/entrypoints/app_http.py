@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from auth_service.app import auth_routers, user_routers
-from auth_service.db import engine, Base
+from auth_service.infra import engine, Base
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()

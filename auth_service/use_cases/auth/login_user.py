@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-from auth_service.db.deps import get_session
-from auth_service.models import User
-from auth_service.core import verify_password
+from auth_service.infra import get_session
+from auth_service.domain import User
+from auth_service.services import verify_password, jwt_creat
 from fastapi import HTTPException, Depends
-from auth_service.auth import create_jwt
 from typing import Optional
 
 class AuthService:
@@ -17,7 +16,7 @@ class AuthService:
         if not verify_password(password, user.password):
             raise HTTPException(status_code=401, detail="Invalid user data")
 
-        return create_jwt(str(user.id))
+        return jwt_creat.create_jwt(str(user.id))
 
 def get_auth_session(session: Session = Depends(get_session)) -> AuthService:
     return AuthService(session = session)

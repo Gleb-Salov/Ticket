@@ -8,7 +8,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 def login_oauth(
     username: str = Form(...),
     password: str = Form(...),
-    crud: AuthService = Depends(get_auth_session),
+    auth: AuthService = Depends(get_auth_session),
 ) -> Token:
-    token = crud.login_user(username, password)
+    token = auth.login_user(username, password)
     return Token(access_token=token, token_type="Bearer")

@@ -14,8 +14,8 @@ class UserRead(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-class DepositRequest(UserBase):
-    value: int
+class DepositRequest(BaseModel):
+    value: Decimal
 
 class BalanceRead(UserBase):
     balance: Decimal

@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from auth_service.core import settings
+from auth_service.infra import settings
 
 DATABASE_URL = settings.database_url
 
