@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from .db_session import get_session
 from auth_service.domain import User
 from auth_service.services import jwt_validator
+from uuid import UUID
+from typing import cast
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -19,9 +21,9 @@ def get_current_user(
             raise ValueError("Missing subject in token")
 
         try:
-            user_id = int(user_id_raw)
+            user_id = UUID(user_id_raw)
         except ValueError:
-            raise ValueError("Subject must be a valid integer")
+            raise ValueError("Subject must be a valid UUID")
 
     except (JWTError, ValueError) as e:
         raise HTTPException(
@@ -37,4 +39,4 @@ def get_current_user(
             detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return user
+    return cast(User, user)

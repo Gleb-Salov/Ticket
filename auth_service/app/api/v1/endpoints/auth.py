@@ -5,7 +5,7 @@ from auth_service.use_cases import AuthService, get_auth_session
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/login", response_model=Token)
-def login_oauth(
+def login_auth(
     username: str = Form(...),
     password: str = Form(...),
     auth: AuthService = Depends(get_auth_session),

@@ -1,12 +1,18 @@
 import os
+from typing import Optional
 from datetime import datetime, timedelta
 from jose import jwt
 from auth_service.infra import settings
 
 class JWTCreator:
-    def __init__(self, private_key_path: str = settings.JWT_PRIVATE_KEY_PATH, algorithm: str = "RS256", expire_minutes: int = 60):
+    def __init__(self, private_key_path: Optional[str] = settings.JWT_PRIVATE_KEY_PATH,
+                 algorithm: str = "RS256",
+                 expire_minutes: int = 60):
         self.algorithm = algorithm
         self.expire_minutes = expire_minutes
+
+        if private_key_path is None:
+            raise ValueError("Private key path is not set")
 
         if not os.path.exists(private_key_path):
             raise FileNotFoundError(f"Private key file not found: {private_key_path}")
@@ -14,7 +20,8 @@ class JWTCreator:
             self._private_key = f.read()
 
     def create_jwt(self, user_id: str) -> str:
-        headers = {"alg": self.algorithm, "typ": "JWT"}
+        headers = {"alg": self.algorithm,
+                   "typ": "JWT"}
         payload = {
             "sub": user_id,
             "iat": datetime.utcnow(),

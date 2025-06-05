@@ -1,6 +1,5 @@
 from typing import NamedTuple
 from fastapi import Depends
-from auth_service.schemas import UserRead
 from .auth_check import get_current_user
 from .user_crud_session import get_user_crud
 from auth_service.infra.db.repositories.user_crud import UserCRUD
@@ -11,7 +10,7 @@ class CommonDeps(NamedTuple):
     user: User
 
 def get_common_deps(
-    user: UserRead = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     crud: UserCRUD = Depends(get_user_crud),
 ) -> CommonDeps:
     return CommonDeps(crud=crud, user=user)
